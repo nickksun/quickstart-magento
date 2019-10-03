@@ -432,7 +432,7 @@ Resources:
     Properties:
       Handler: index.lambda_handler
       Runtime: python2.7
-      Timeout: 300
+      Timeout: 900
       Role: !GetAtt AMIInfoFunctionExecutionRole.Arn
       Code:
         ZipFile: |
@@ -461,7 +461,7 @@ Resources:
     Properties:
       Handler: index.lambda_handler
       Runtime: python2.7
-      Timeout: 300
+      Timeout: 900
       Role: !GetAtt AMIInfoFunctionExecutionRole.Arn
       Code:
         ZipFile: |
@@ -590,13 +590,13 @@ Resources:
       UnhealthyThresholdCount: 5
       VpcId:
         Ref: VPCID
-      TargetGroupAttributes:
-      - Key: stickiness.enabled
-        Value: 'true'
-      - Key: stickiness.type
-        Value: lb_cookie
-      - Key: stickiness.lb_cookie.duration_seconds
-        Value: '30'
+      # TargetGroupAttributes:
+      # - Key: stickiness.enabled
+      #   Value: 'true'
+      # - Key: stickiness.type
+      #   Value: lb_cookie
+      # - Key: stickiness.lb_cookie.duration_seconds
+      #   Value: '30'
   ALBListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
