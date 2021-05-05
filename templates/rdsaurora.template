@@ -30,11 +30,11 @@ Parameters:
     - db.m3.xlarge
     - db.m3.2xlarge
     - db.m4.2xlarge
-    - db.r3.large
-    - db.r3.xlarge
-    - db.r3.2xlarge
-    - db.r3.4xlarge
-    - db.r3.8xlarge
+    - db.r5.large
+    - db.r5.xlarge
+    - db.r5.2xlarge
+    - db.r5.4xlarge
+    - db.r5.8xlarge
     - db.t2.micro
     - db.t2.small
     - db.t2.medium
@@ -46,7 +46,7 @@ Parameters:
     - db.m1.large
     - db.m1.xlarge
     ConstraintDescription: Must select a valid database instance type.
-    Default: db.r3.2xlarge
+    Default: db.r5.large
     Description: The name of the compute and memory capacity class of the DB instance.
     Type: String
   DBIops:
@@ -134,7 +134,7 @@ Resources:
     Properties:
       DatabaseName: !Ref DBName
       Engine: aurora
-      EngineVersion: '5.6'
+      EngineVersion: '8.0'
       MasterUsername: !Ref DBMasterUsername
       MasterUserPassword: !Ref DBMasterUserPassword
       BackupRetentionPeriod: !Ref DBBackupRetentionPeriod

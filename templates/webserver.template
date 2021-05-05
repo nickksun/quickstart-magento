@@ -22,7 +22,7 @@ Parameters:
     Description: Username of the Magento site administrator
     Type: String
   AmazonLinuxAMI:
-    Default: /aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
     Description: SSM parameter pointing to the desired Amazon Linux AMI
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
   DBMasterUserPassword:
@@ -128,20 +128,20 @@ Parameters:
     - t2.small
     - t2.medium
     - t2.large
-    - m4.large
-    - m4.xlarge
-    - m4.2xlarge
-    - m4.4xlarge
-    - m4.10xlarge
+    - m5.large
+    - m5.xlarge
+    - m5.2xlarge
+    - m5.4xlarge
+    - m5.10xlarge
     - m3.medium
     - m3.large
     - m3.xlarge
     - m3.2xlarge
-    - c4.large
-    - c4.xlarge
-    - c4.2xlarge
-    - c4.4xlarge
-    - c4.8xlarge
+    - c5.large
+    - c5.xlarge
+    - c5.2xlarge
+    - c5.4xlarge
+    - c5.8xlarge
     - c3.large
     - c3.xlarge
     - c3.2xlarge
@@ -157,7 +157,7 @@ Parameters:
     - i2.4xlarge
     - i2.8xlarge
     ConstraintDescription: Choose an instance type.
-    Default: m4.large
+    Default: m5.large
     Description: Web Server node instance type
     Type: String
   WebServerMaxSize:
@@ -258,7 +258,7 @@ Resources:
     DependsOn: MagentoAMI
     Properties:
       Handle: !Ref MagentoAMIWaitHandle
-      Timeout: '3600'
+      Timeout: '7200'
   MagentoAMI:
     Type: AWS::EC2::Instance
     DependsOn:

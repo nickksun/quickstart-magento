@@ -199,19 +199,19 @@ Parameters:
     Type: String
   BastionInstanceType:
     AllowedValues:
-    - t2.nano
-    - t2.micro
-    - t2.small
-    - t2.medium
-    - t2.large
+    - t3.nano
+    - t3.micro
+    - t3.small
+    - t3.medium
+    - t3.large
     - m3.large
     - m3.xlarge
     - m3.2xlarge
-    - m4.large
-    - m4.xlarge
-    - m4.2xlarge
-    - m4.4xlarge
-    Default: t2.micro
+    - m5.large
+    - m5.xlarge
+    - m5.2xlarge
+    - m5.4xlarge
+    Default: t3.micro
     Description: Amazon EC2 instance type for the bastion instances
     Type: String
   DBAllocatedStorage:
@@ -246,16 +246,16 @@ Parameters:
     - db.t2.small
     - db.t2.medium
     - db.t2.large
-    - db.m4.large
-    - db.m4.xlarge
-    - db.m4.2xlarge
-    - db.m4.4xlarge
-    - db.m4.10xlarge
-    - db.r3.large
-    - db.r3.xlarge
-    - db.r3.2xlarge
-    - db.r3.4xlarge
-    - db.r3.8xlarge
+    - db.m5.large
+    - db.m5.xlarge
+    - db.m5.2xlarge
+    - db.m5.4xlarge
+    - db.m5.10xlarge
+    - db.r5.large
+    - db.r5.xlarge
+    - db.r5.2xlarge
+    - db.r5.4xlarge
+    - db.r5.8xlarge
     - db.m3.medium
     - db.m3.large
     - db.m3.xlarge
@@ -269,7 +269,7 @@ Parameters:
     - db.m1.large
     - db.t1.micro
     ConstraintDescription: Must select a valid database instance type.
-    Default: db.r3.2xlarge
+    Default: db.r5.2xlarge
     Description: The name of the compute and memory capacity class of the Amazon RDS
       (Aurora/MySQL) DB instance.
     Type: String
@@ -347,9 +347,9 @@ Parameters:
     Type: String
   ElastiCacheNodeType:
     AllowedValues:
-    - cache.t2.micro
-    - cache.t2.small
-    - cache.t2.medium
+    - cache.t3.micro
+    - cache.t3.small
+    - cache.t3.medium
     - cache.m3.medium
     - cache.m3.large
     - cache.m3.xlarge
@@ -366,7 +366,7 @@ Parameters:
     - cache.r3.4xlarge
     - cache.r3.8xlarge
     ConstraintDescription: Must select a valid cache instance type.
-    Default: cache.m4.large
+    Default: cache.t3.medium
     Description: The name of the compute and memory capacity class of the ElastiCache
       instance.
     Type: String
@@ -399,6 +399,7 @@ Parameters:
     AllowedValues:
     - '2.1'
     - '2.3'
+    - '2.4'
     Default: '2.3'
     Description: Magento Version (2.1 or 2.3)
     Type: String
@@ -483,20 +484,20 @@ Parameters:
     - t2.small
     - t2.medium
     - t2.large
-    - m4.large
-    - m4.xlarge
-    - m4.2xlarge
-    - m4.4xlarge
-    - m4.10xlarge
+    - m5.large
+    - m5.xlarge
+    - m5.2xlarge
+    - m5.4xlarge
+    - m5.10xlarge
     - m3.medium
     - m3.large
     - m3.xlarge
     - m3.2xlarge
-    - c4.large
-    - c4.xlarge
-    - c4.2xlarge
-    - c4.4xlarge
-    - c4.8xlarge
+    - c5.large
+    - c5.xlarge
+    - c5.2xlarge
+    - c5.4xlarge
+    - c5.8xlarge
     - c3.large
     - c3.xlarge
     - c3.2xlarge
@@ -512,7 +513,7 @@ Parameters:
     - i2.4xlarge
     - i2.8xlarge
     ConstraintDescription: Choose an instance type. m3.medium or larger recommended.
-    Default: m4.large
+    Default: m5.large
     Description: Web server instance type
     Type: String
   WebServerMaxSize:
@@ -532,13 +533,13 @@ Rules:
     Assertions:
     - Assert:
         !Contains
-        - - db.r3.large
-          - db.r3.xlarge
-          - db.r3.2xlarge
-          - db.r3.4xlarge
-          - db.r3.8xlarge
-          - db.t2.small
-          - db.t2.medium
+        - - db.r5.large
+          - db.r5.xlarge
+          - db.r5.2xlarge
+          - db.r5.4xlarge
+          - db.r5.8xlarge
+          - db.t3.small
+          - db.t3.medium
         - !Ref DBInstanceClass
       AssertDescription: Amazon Aurora does not currently support this DB instance
         class.

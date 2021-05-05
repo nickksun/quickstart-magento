@@ -1,0 +1,75 @@
+Description: Create a CloudFront distribution in front of S3 bucket
+Parameters:
+  AcmCertificateArn:
+    Description: ARN for ACM Certificate
+    Type: String
+  DomainName:
+    Description: domain name 
+    Type: String
+  HostedZone:
+    Description: Hosted Zone ID of root domain
+    Type: String
+  TargetBucket:
+    Description: origin bucket
+    Type: String
+# Conditions:
+#   UseRegionValueForS3: !Equals [!Ref "AWS::Region", "us-east-1"]
+Resources:
+  OriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub "access-identity-${AWS::StackName}"
+  TargetBucketBucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref TargetBucket
+      PolicyDocument:
+        Statement:
+        - Action: "s3:Get*"
+          Effect: Allow
+          Resource: !Sub "arn:aws:s3:::${TargetBucket}/*"
+          Principal:
+            CanonicalUser: !GetAtt OriginAccessIdentity.S3CanonicalUserId
+  CloudfrontDistro:
+    Type: "AWS::CloudFront::Distribution"
+    Properties:
+      DistributionConfig:
+        Aliases:
+        - !Ref DomainName
+        DefaultCacheBehavior:
+          AllowedMethods:
+          - "GET"
+          - "HEAD"
+          - "OPTIONS"
+          DefaultTTL: 10
+          ForwardedValues:
+            QueryString: "true"
+            Cookies:
+              Forward: "none"
+          TargetOriginId: !Join ["", ["S3-", !Ref TargetBucket]]
+          ViewerProtocolPolicy: "redirect-to-https"
+        DefaultRootObject: "index.html"
+        Enabled: "true"
+        HttpVersion: http2
+        Origins:
+        - Id: !Join ["", ["S3-", !Ref TargetBucket]]
+          DomainName: !Sub ${TargetBucket}.s3.amazonaws.com
+          # - ${TargetBucket}.s3.amazonaws.com
+          # - { TargetBucket: !Ref TargetBucket, TargetRegion: !If [UseRegionValueForS3, "", !Join ["-", ["", !Ref "AWS::Region"]]]}
+          S3OriginConfig:
+            OriginAccessIdentity: !Join ["", ["origin-access-identity/cloudfront/", !Ref OriginAccessIdentity]]
+        ViewerCertificate:
+          AcmCertificateArn: !Ref AcmCertificateArn
+          MinimumProtocolVersion: "TLSv1.2_2018"
+          SslSupportMethod: "sni-only"
+  DomainDns:
+    Type: "AWS::Route53::RecordSet"
+    DependsOn: CloudfrontDistro
+    Properties:
+      AliasTarget:
+        DNSName: !GetAtt CloudfrontDistro.DomainName
+        HostedZoneId: "Z2FDTNDATAQYW2"
+      HostedZoneId: !Ref HostedZone
+      Name: !Ref DomainName
+      Type: "A"

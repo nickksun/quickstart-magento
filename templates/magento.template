@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Deploy Magento 2.1 or 2.3 on AWS. QS(0013)
+Description: Deploy Magento 2.4 on AWS. QS(0013)
 Metadata:
   LICENSE: Apache License Version 2.0
   AWS::CloudFormation::Interface:
@@ -212,11 +212,11 @@ Parameters:
     - db.m4.2xlarge
     - db.m4.4xlarge
     - db.m4.10xlarge
-    - db.r3.large
-    - db.r3.xlarge
-    - db.r3.2xlarge
-    - db.r3.4xlarge
-    - db.r3.8xlarge
+    - db.r5.large
+    - db.r5.xlarge
+    - db.r5.2xlarge
+    - db.r5.4xlarge
+    - db.r5.8xlarge
     - db.m3.medium
     - db.m3.large
     - db.m3.xlarge
@@ -230,7 +230,7 @@ Parameters:
     - db.m1.large
     - db.t1.micro
     ConstraintDescription: Must select a valid database instance type.
-    Default: db.r3.2xlarge
+    Default: db.r5.xlarge
     Description: The name of the compute and memory capacity class of the Amazon RDS
       (Aurora/MySQL) DB instance.
     Type: String
@@ -308,18 +308,18 @@ Parameters:
     Type: String
   ElastiCacheNodeType:
     AllowedValues:
-    - cache.t2.micro
-    - cache.t2.small
-    - cache.t2.medium
+    - cache.t3.micro
+    - cache.t3.small
+    - cache.t3.medium
     - cache.m3.medium
     - cache.m3.large
     - cache.m3.xlarge
     - cache.m3.2xlarge
-    - cache.m4.large
-    - cache.m4.xlarge
-    - cache.m4.2xlarge
-    - cache.m4.4xlarge
-    - cache.m4.10xlarge
+    - cache.m5.large
+    - cache.m5.xlarge
+    - cache.m5.2xlarge
+    - cache.m5.4xlarge
+    - cache.m5.10xlarge
     - cache.c1.xlarge
     - cache.r3.large
     - cache.r3.xlarge
@@ -327,7 +327,7 @@ Parameters:
     - cache.r3.4xlarge
     - cache.r3.8xlarge
     ConstraintDescription: Must select a valid cache instance type.
-    Default: cache.m4.large
+    Default: cache.t3.medium
     Description: The name of the compute and memory capacity class of the ElastiCache
       instance.
     Type: String
@@ -424,11 +424,11 @@ Parameters:
     - t2.small
     - t2.medium
     - t2.large
-    - m4.large
-    - m4.xlarge
-    - m4.2xlarge
-    - m4.4xlarge
-    - m4.10xlarge
+    - m5.large
+    - m5.xlarge
+    - m5.2xlarge
+    - m5.4xlarge
+    - m5.10xlarge
     - m3.medium
     - m3.large
     - m3.xlarge
@@ -453,7 +453,7 @@ Parameters:
     - i2.4xlarge
     - i2.8xlarge
     ConstraintDescription: Choose an instance type. m3.medium or larger recommended.
-    Default: m4.large
+    Default: m5.large
     Description: Web server instance type
     Type: String
   WebServerMaxSize:

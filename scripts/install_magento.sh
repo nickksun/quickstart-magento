@@ -66,17 +66,27 @@ EC2_AVAIL_ZONE=`curl -s http://169.254.169.254/latest/meta-data/placement/availa
 EC2_REGION="`echo \"$EC2_AVAIL_ZONE\" | sed -e 's:\([0-9][0-9]*\)[a-z]*\$:\\1:'`"
 
 yum -y update
-yum -y install nginx php72-fpm php72-cli php72-mysqlnd php72-soap php72-xml php72-zip php72-json php72-mcrypt php72-intl php72-mbstring php72-zip php72-gd php72-bcmath php72-pdo php72-opcache php72-devel mysql56
+
+amazon-linux-extras enable php7.4
+amazon-linux-extras install -y nginx1
+yum clean metadata
+
+yum install -y php php-{fpm,cli,mysqlnd,soap,xml,zip,json,intl,mbstring,zip,gd,bcmath,pdo,opcache,devel}
+yum install -y mysql
+
+#yum -y install nginx php74-fpm php74-cli php74-mysqlnd php74-soap php74-xml php74-zip php74-json php74-mcrypt php74-intl php74-mbstring php74-zip php74-gd php74-bcmath php74-pdo php74-opcache php74-devel mysql56
 
 chkconfig nginx on
-chkconfig php-fpm-7.2 on
+#chkconfig php-fpm-7.4 on
+chkconfig php-fpm on
+
 /etc/ssl/certs/make-dummy-cert /etc/ssl/certs/magento
 
 
-cat << EOF > /etc/php-fpm-7.2.conf
+cat << EOF > /etc/php-fpm.conf
 [global]
-pid = /var/run/php-fpm/php-fpm-7.2.pid
-error_log = /var/log/php-fpm/7.2/error.log
+pid = /var/run/php-fpm/php-fpm.pid
+error_log = /var/log/php-fpm/error.log
 daemonize = yes
 [www]
 user = nginx
@@ -90,14 +100,14 @@ pm.start_servers = 5
 pm.min_spare_servers = 5
 pm.max_spare_servers = 35
 slowlog = /var/log/php-fpm/www-slow.log
-php_admin_value[error_log] = /var/log/php-fpm/7.2/www-error.log
+php_admin_value[error_log] = /var/log/php-fpm/www-error.log
 php_admin_flag[log_errors] = on
 php_value[session.save_handler] = files
-php_value[session.save_path]    = /var/lib/php/7.2/session
-php_value[soap.wsdl_cache_dir]  = /var/lib/php/7.2/wsdlcache
+php_value[session.save_path]    = /var/lib/php/session
+php_value[soap.wsdl_cache_dir]  = /var/lib/php/wsdlcache
 EOF
 
-service php-fpm-7.2 start
+service php-fpm start
 
 if [ -z "$certificateid" ]
 then
@@ -441,7 +451,7 @@ EOF
 
 fi
 
-cat << 'EOF' > /etc/php-7.2.ini
+cat << 'EOF' > /etc/php.ini
 [PHP]
 engine = On
 short_open_tag = Off
@@ -581,7 +591,6 @@ soap.wsdl_cache_limit = 5
 [sysvshm]
 [ldap]
 ldap.max_links = -1
-[mcrypt]
 [dba]
 [curl]
 [openssl]
@@ -591,7 +600,7 @@ mkdir -p /var/www/html
 chown ec2-user:nginx /var/www/html
 chmod g+w /var/www/html/
 usermod -g nginx ec2-user
-chgrp -R nginx /var/lib/php/7.2/*
+chgrp -R nginx /var/lib/php/*
 service nginx start
 
 chmod a+x configure_magento.sh
@@ -618,9 +627,9 @@ sed -i s/${adminpassword}/xxxxx/g /var/log/cloud-init.log
 rm -f ${PARAMS_FILE}
 
 cat << EOF > magento.cron
-* * * * * /usr/bin/php -c /etc/php-7.2.ini /var/www/html/bin/magento cron:run | grep -v "Ran jobs by schedule" >> /var/www/html/var/log/magento.cron.log
-* * * * * /usr/bin/php -c /etc/php-7.2.ini /var/www/html/update/cron.php >> /var/www/html/var/log/update.cron.log
-* * * * * /usr/bin/php -c /etc/php-7.2.ini /var/www/html/bin/magento setup:cron:run >> /var/www/html/var/log/setup.cron.log
+* * * * * /usr/bin/php -c /etc/php.ini /var/www/html/bin/magento cron:run | grep -v "Ran jobs by schedule" >> /var/www/html/var/log/magento.cron.log
+* * * * * /usr/bin/php -c /etc/php.ini /var/www/html/update/cron.php >> /var/www/html/var/log/update.cron.log
+* * * * * /usr/bin/php -c /etc/php.ini /var/www/html/bin/magento setup:cron:run >> /var/www/html/var/log/setup.cron.log
 EOF
 
 crontab -u ec2-user magento.cron
