@@ -21,6 +21,7 @@ function exportParams() {
     magentolanguage=`grep 'MagentoLanguage' ${PARAMS_FILE} | awk -F'|' '{print $2}' | sed -e 's/^ *//g;s/ *$//g'`
     magentocurrency=`grep 'MagentoCurrency' ${PARAMS_FILE} | awk -F'|' '{print $2}' | sed -e 's/^ *//g;s/ *$//g'`
     magentotimezone=`grep 'MagentoTimezone' ${PARAMS_FILE} | awk -F'|' '{print $2}' | sed -e 's/^ *//g;s/ *$//g'`
+    searchhost=`grep 'ElasticsearchEndpoint' ${PARAMS_FILE} | awk -F'|' '{print $2}' | sed -e 's/^ *//g;s/ *$//g'`
 }
 
 if [ $# -ne 1 ]; then
@@ -48,6 +49,7 @@ certificateid='NONE'
 magentolanguage='NONE'
 magentocurrency='NONE'
 magentotimezone='NONE'
+searchhost='NONE'
 
 #install_magento.sh dbhost dbuser dbpassword dbname cname adminfirstname adminlastname adminemail adminuser adminpassword cachehost efsid magentourl magentoversion certificateid magentolanguage magentocurrency magentotimezone
 
@@ -91,7 +93,7 @@ daemonize = yes
 [www]
 user = nginx
 group = nginx
-listen = /tmp/php-cgi.socket
+listen = /var/run/php-fpm/www.sock
 listen.owner = nginx
 listen.group = nginx
 pm = dynamic
@@ -124,14 +126,14 @@ events {
 
 http {
 upstream fastcgi_backend {
-        server unix:/tmp/php-cgi.socket;
+        server unix:/var/run/php-fpm/www.sock;
         server 127.0.0.1:9000 backup;
 }
 server {
         set $MAGE_ROOT /var/www/html;
         include /etc/nginx/mime.types;
         listen 80 default_server;
-        server_name www.example.com;
+        server_name magento2.nickksun.me;
         root $MAGE_ROOT/pub/;
 
         index index.php;
@@ -263,7 +265,8 @@ server {
         location ~ (index|get|static|report|404|503)\.php$ {
             try_files $uri =404;
             fastcgi_pass   fastcgi_backend;
-            fastcgi_buffers 1024 4k;
+            fastcgi_buffers 16 16k;
+            fastcgi_buffer_size 32k;
 
             fastcgi_param  PHP_FLAG  "session.auto_start=off \n suhosin.session.cryptua=off";
             fastcgi_param  PHP_VALUE "memory_limit=768M \n max_execution_time=600";
@@ -291,15 +294,15 @@ events {
 }
 
 http {
-upstream fastcgi_backend {
-        server unix:/tmp/php-cgi.socket;
+upstream fastcgi_backend {        
+        server unix:/var/run/php-fpm/www.sock;
         server 127.0.0.1:9000 backup;
 }
 server {
         set $MAGE_ROOT /var/www/html;
         include /etc/nginx/mime.types;
         listen 443 ssl default_server;
-        server_name www.example.com;
+        server_name magento2.nickksun.me;
         root $MAGE_ROOT/pub/;
 
         ssl_certificate /etc/ssl/certs/magento;
@@ -612,7 +615,7 @@ then
         protocol="http"
 fi
 
-sudo -u ec2-user /tmp/configure_magento.sh $dbhost $dbuser $dbpassword $dbname $cname $adminfirst $adminlast $adminemail $adminuser $adminpassword $cachehost $protocol $magentolanguage $magentocurrency $magentotimezone $magentoversion
+sudo -u ec2-user /tmp/configure_magento.sh $dbhost $dbuser $dbpassword $dbname $cname $adminfirst $adminlast $adminemail $adminuser $adminpassword $cachehost $protocol $magentolanguage $magentocurrency $magentotimezone $magentoversion $searchhost
 
 tar czf /root/media.tgz -C /var/www/html/pub/media .
 mount -t nfs4 -o vers=4.1 $efsid.efs.$EC2_REGION.amazonaws.com:/ /var/www/html/pub/media

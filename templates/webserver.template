@@ -53,6 +53,10 @@ Parameters:
     Default: ''
     Description: ElastiCache Endpoint
     Type: String
+  ElasticsearchEndpoint:
+    Default: ''
+    Description: Elasticsearch Endpoint
+    Type: String
   ElasticLoadBalancerSubnets:
     ConstraintDescription: Must be list of existing Public subnet IDs
     Default: ''
@@ -345,6 +349,7 @@ Resources:
                   AdminUserName|${AdminUserName}
                   AdminPassword|${AdminPassword}
                   ElastiCacheEndpoint|${ElastiCacheEndpoint}
+                  ElasticsearchEndpoint|${ElasticsearchEndpoint}
                   FileSystem|${FileSystem}
                   MagentoReleaseMedia|${MagentoReleaseMedia}
                   MagentoVersion|${MagentoVersion}

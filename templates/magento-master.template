@@ -377,6 +377,31 @@ Parameters:
     MaxValue: '5'
     MinValue: '2'
     Type: Number
+  
+  ElasticsearchInstanceType:
+    Description: Which instance type should we use to build the Elasticsearch cluster?
+    Type: String
+    Default: t3.medium.elasticsearch
+  
+  ElasticsearchEBSVolumeGB:
+    Description: Size of EBS volume in GB for Elasticsearch
+    Default: 20
+    Type: Number
+
+  ElasticsearchDomainName:
+    Description: Domain Name of Elasticsearch cluster
+    Type: String
+
+  ElasticsearchVersion:
+    Description: version of Elasticsearch
+    Type: String
+    Default: 7.10
+
+  ElasticsearchInstanceCount:
+    Description: The number of data nodes (instances) to use in the Amazon ES domain
+    Type: Number
+    Default: 2
+
   KeyPairName:
     Description: Public/private key pairs allow you to securely connect to your instance
       after it launches
@@ -588,7 +613,7 @@ Resources:
         PrivateSubnet2ACIDR: !Ref PrivateSubnet2CIDR
         PublicSubnet1CIDR: !Ref PublicSubnet1CIDR
         PublicSubnet2CIDR: !Ref PublicSubnet2CIDR
-        VPCCIDR: !Ref VPCCIDR
+        VPCCIDR: !Ref VPCCIDR  
   BastionStack:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -627,6 +652,11 @@ Resources:
         ElastiCacheAutomaticFailover: !Ref ElastiCacheAutomaticFailover
         ElastiCacheNodeType: !Ref ElastiCacheNodeType
         ElastiCacheNodes: !Ref ElastiCacheNodes
+        ElasticsearchInstanceCount: !Ref ElasticsearchInstanceCount
+        ElasticsearchEBSVolumeGB: !Ref ElasticsearchEBSVolumeGB
+        ElasticsearchInstanceType: !Ref ElasticsearchInstanceType
+        ElasticsearchVersion: !Ref ElasticsearchVersion
+        ElasticsearchDomainName: !Ref ElasticsearchDomainName
         KeyPairName: !Ref KeyPairName
         MagentoCurrency: !Ref MagentoCurrency
         MagentoLanguage: !Ref MagentoLanguage

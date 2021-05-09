@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ $# -ne 16 ]; then
-    echo $0: usage: configure_magento.sh dbhost dbuser dbpassword dbname cname adminfirstname adminlastname adminemail adminuser adminpassword cachehost protocol magentolanguage magentocurrency magentotimezone magentoversion
+if [ $# -ne 17 ]; then
+    echo $0: usage: configure_magento.sh dbhost dbuser dbpassword dbname cname adminfirstname adminlastname adminemail adminuser adminpassword cachehost protocol magentolanguage magentocurrency magentotimezone magentoversion searchhost
     exit 1
 fi
 
@@ -23,6 +23,7 @@ magentolanguage=${13}
 magentocurrency=${14}
 magentotimezone=${15}
 magentoversion=${16}
+searchhost=${17}
 
 cd
 #curl -o magento.tar.gz $magentourl
@@ -189,9 +190,11 @@ cd /var/www/html/bin
 --db-host=$dbhost --db-name=$dbname --db-user=$dbuser --db-password=$dbpassword \
 --admin-firstname=$adminfirst --admin-lastname=$adminlast --admin-email=$adminemail \
 --admin-user=$adminuser --admin-password=$adminpassword --language=$magentolanguage \
+--search-engine=elasticsearch7 --elasticsearch-host=$searchhost --elasticsearch-port=443 \
 --currency=$magentocurrency --timezone=$magentotimezone $secure
 # ./magento setup:config:set  --session-save=redis --session-save-redis-host=$cachehost --session-save-redis-db=2
 
+./magento module:disable {Magento_Elasticsearch,Magento_InventoryElasticsearch,Magento_Elasticsearch6,Magento_Elasticsearch7}
 
 fi
 

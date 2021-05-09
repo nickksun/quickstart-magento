@@ -338,6 +338,31 @@ Parameters:
     MaxValue: '5'
     MinValue: '2'
     Type: Number
+
+  ElasticsearchInstanceType:
+    Description: Which instance type should we use to build the Elasticsearch cluster?
+    Type: String
+    Default: t3.medium.elasticsearch
+
+  ElasticsearchEBSVolumeGB:
+    Description: Size of EBS volume in GB for Elasticsearch
+    Default: 20
+    Type: Number
+
+  ElasticsearchDomainName:
+    Description: Domain Name of Elasticsearch cluster
+    Type: String
+
+  ElasticsearchVersion:
+    Description: version of Elasticsearch
+    Type: String
+    Default: 7.10
+
+  ElasticsearchInstanceCount:
+    Description: The number of data nodes (instances) to use in the Amazon ES domain
+    Type: Number
+    Default: 2
+
   KeyPairName:
     Description: Public/private key pairs allow you to securely connect to your instance
       after it launches
@@ -545,6 +570,18 @@ Resources:
         DBMasterUserPassword: !Ref DBMasterUserPassword
         DBMultiAZ: !Ref DBMultiAZ
         DBStorageType: !Ref DBStorageType
+  Elasticsearch:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/elasticsearch.template
+      Parameters:
+        ElasticsearchSecurityGroup: !GetAtt SecurityGroupStack.Outputs.ElasticsearchSecurityGroup
+        Subnets: !Sub ${PrivateSubnet1ID},${PrivateSubnet2ID}
+        InstanceCount: !Ref ElasticsearchInstanceCount
+        EBSVolumeGB: !Ref ElasticsearchEBSVolumeGB
+        InstanceType: !Ref ElasticsearchInstanceType
+        ElasticsearchVersion: !Ref ElasticsearchVersion
+        ElasticsearchDomainName: !Ref ElasticsearchDomainName
   ElastiCache:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -584,6 +621,7 @@ Resources:
         DBName: !Ref DBName
         MySQLEndPointAddress: !GetAtt RDSStack.Outputs.RDSEndPointAddress
         ElastiCacheEndpoint: !GetAtt ElastiCache.Outputs.ElastiCacheEndpoint
+        ElasticsearchEndpoint: !GetAtt Elasticsearch.Outputs.ElasticsearchDomainEndpoint
         DNSName: !Ref DNSName
         AdminFirstName: !Ref AdminFirstName
         AdminLastName: !Ref AdminLastName

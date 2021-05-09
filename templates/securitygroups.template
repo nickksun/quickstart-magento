@@ -125,6 +125,25 @@ Resources:
         FromPort: 443
         ToPort: 443
         CidrIp: 0.0.0.0/0
+  ElasticsearchSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Elasticsearch Security Group (AWS Quick Start)
+      VpcId: !Ref VPCID
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        SourceSecurityGroupId: !GetAtt WebServerSecurityGroup.GroupId
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        CidrIp: 0.0.0.0/0
   SecurityGroupRuleAppDB:
     Type: AWS::EC2::SecurityGroupEgress
     Properties:
@@ -165,4 +184,8 @@ Outputs:
   ElastiCacheSecurityGroup:
     Description: Elasticache Security Group
     Value: !Ref ElastiCacheSecurityGroup
+  ElasticsearchSecurityGroup:
+    Description: Elasticsearch Security Group
+    Value: !Ref ElasticsearchSecurityGroup
+
 ...
