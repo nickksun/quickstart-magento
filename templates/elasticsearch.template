@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: >
+  This template deploys an Elasticsearch cluster to the provided VPC and subnets
+
+Parameters:
+  ElasticsearchDomainName:
+    Description: Domain Name of Elasticsearch cluster
+    Type: String
+
+  ElasticsearchVersion:
+    Description: version of Elasticsearch
+    Type: String
+    Default: 7.10
+
+  InstanceType:
+    Description: Which instance type should we use to build the Elasticsearch cluster?
+    Type: String
+    Default: t3.medium.elasticsearch
+  
+  InstanceCount:
+    Description: The number of data nodes (instances) to use in the Amazon ES domain
+    Type: Number
+    Default: 2
+
+  EBSVolumeGB:
+    Description: Size of EBS volume in GB 
+    Default: 20
+    Type: Number
+
+  ElasticsearchSecurityGroup:
+    Description: Elasticsearch Security Group
+    Type: AWS::EC2::SecurityGroup::Id
+  
+  Subnets:
+    ConstraintDescription: Must be list of existing subnet Ids
+    Description: Atleast two existing Subnets in separate Availability Zones your Virtual Private Cloud (VPC)
+    Type: List<AWS::EC2::Subnet::Id>
+
+Conditions:
+  MultiAZ: !Not [!Equals [!Ref InstanceCount, 1]]
+
+Resources:
+  ElastiscsearchDomain:
+    Type: AWS::Elasticsearch::Domain
+    Properties:
+      ElasticsearchVersion: !Ref ElasticsearchVersion
+      DomainName: !Ref ElasticsearchDomainName
+      AccessPolicies:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            AWS: '*'
+          Action:
+          - 'es:ESHttp*'
+          Resource: !Sub 'arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/${ElasticsearchDomainName}/*'
+      EBSOptions:
+        EBSEnabled: True
+        VolumeType: gp2
+        VolumeSize: !Ref EBSVolumeGB
+      ElasticsearchClusterConfig:
+        InstanceType: !Ref InstanceType
+        InstanceCount: !Ref InstanceCount
+        ZoneAwarenessEnabled: !If [MultiAZ, True, False]
+      VPCOptions:
+        SecurityGroupIds:
+          - !Ref ElasticsearchSecurityGroup
+        SubnetIds: !Ref Subnets
+
+Outputs:
+  ElasticsearchDomainEndpoint:
+    Description: Elasticsearch instance Domain Endpoint
+    Value:  !GetAtt ElastiscsearchDomain.DomainEndpoint
+    Export:
+      Name: !Join [ ":", [ !Ref "AWS::StackName", ElasticsearchDomainEndpoint ] ]
