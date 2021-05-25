@@ -73,7 +73,7 @@ amazon-linux-extras enable php7.4
 amazon-linux-extras install -y nginx1
 yum clean metadata
 
-yum install -y php php-{fpm,cli,mysqlnd,soap,xml,zip,json,intl,mbstring,zip,gd,bcmath,pdo,opcache,devel}
+yum install -y php php-{fpm,cli,mysqlnd,soap,xml,zip,json,intl,mbstring,zip,gd,bcmath,pdo,opcache,devel,sodium}
 yum install -y mysql
 
 #yum -y install nginx php74-fpm php74-cli php74-mysqlnd php74-soap php74-xml php74-zip php74-json php74-mcrypt php74-intl php74-mbstring php74-zip php74-gd php74-bcmath php74-pdo php74-opcache php74-devel mysql56
@@ -437,7 +437,8 @@ server {
         location ~ (index|get|static|report|404|503)\.php$ {
             try_files $uri =404;
             fastcgi_pass   fastcgi_backend;
-            fastcgi_buffers 1024 4k;
+            fastcgi_buffers 1024 16k;
+            fastcgi_buffer_size 32k;
 
             fastcgi_param  PHP_FLAG  "session.auto_start=off \n suhosin.session.cryptua=off";
             fastcgi_param  PHP_VALUE "memory_limit=768M \n max_execution_time=600";

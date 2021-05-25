@@ -23,7 +23,7 @@ magentolanguage=${13}
 magentocurrency=${14}
 magentotimezone=${15}
 magentoversion=${16}
-searchhost=${17}
+searchhost=https://${17}
 
 cd
 #curl -o magento.tar.gz $magentourl
@@ -194,8 +194,13 @@ cd /var/www/html/bin
 --currency=$magentocurrency --timezone=$magentotimezone $secure
 # ./magento setup:config:set  --session-save=redis --session-save-redis-host=$cachehost --session-save-redis-db=2
 
-./magento module:disable {Magento_Elasticsearch,Magento_InventoryElasticsearch,Magento_Elasticsearch6,Magento_Elasticsearch7}
-
+# ./magento module:disable {Magento_Elasticsearch,Magento_InventoryElasticsearch,Magento_Elasticsearch6,Magento_Elasticsearch7}
+./magento module:disable Magento_TwoFactorAuth
+./magento setup:upgrade
+./magento maintenance:disable
+./magento setup:static-content:deploy    
+./magento setup:di:compile
+./magento cache:flush
 fi
 
 

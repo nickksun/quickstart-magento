@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Magento 2.3.2 Web Server Template
+Description: Magento 2.4 Web Server Template
 Parameters:
   AdminEmail:
     Description: Email of the Magento site administrator
