@@ -198,9 +198,11 @@ cd /var/www/html/bin
 ./magento module:disable Magento_TwoFactorAuth
 ./magento setup:upgrade
 ./magento maintenance:disable
-./magento setup:static-content:deploy    
+./magento setup:static-content:deploy
 ./magento setup:di:compile
+./magento catalog:images:resize
 ./magento cache:flush
+./magento cron:install
 fi
 
 

@@ -542,7 +542,7 @@ Resources:
           Fn::Sub: |
             #cloud-config
             runcmd:
-            - echo "${FileSystem}.efs.${AWS::Region}.amazonaws.com:/    /var/www/html/pub/media   nfs4    defaults" >> /etc/fstab
+            - echo "${FileSystem}.efs.${AWS::Region}.amazonaws.com:/    /var/www/html/pub   nfs4    defaults" >> /etc/fstab
             - mount -a
   WebServerTargetTrackingScalingPolicy:
     Type: AWS::AutoScaling::ScalingPolicy
