@@ -125,6 +125,15 @@ Resources:
     Properties:
       DBSubnetGroupDescription: Subnets available for the RDS MySQL DB Instance
       SubnetIds: !Ref Subnets
+
+  MySQLDBParameterGroup:
+    Type: AWS::RDS::DBParameterGroup
+    Properties:
+      Description: Parameters for the RDS MySQL DB Instance
+      Family: mysql8.0
+      Parameters:
+        log_bin_trust_function_creators: 1
+
   MySQLDB:
     Type: AWS::RDS::DBInstance
     Properties:
@@ -136,6 +145,7 @@ Resources:
       MasterUsername: !Ref DBMasterUsername
       MasterUserPassword: !Ref DBMasterUserPassword
       DBSubnetGroupName: !Ref MySQLDBSubnetGroup
+      DBParameterGroupName: !Ref MySQLDBParameterGroup
       VPCSecurityGroups:
       - !Ref RDSSecurityGroup
       MultiAZ: !Ref DBMultiAZ

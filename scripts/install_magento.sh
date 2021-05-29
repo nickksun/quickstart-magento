@@ -618,10 +618,10 @@ fi
 
 sudo -u ec2-user /tmp/configure_magento.sh $dbhost $dbuser $dbpassword $dbname $cname $adminfirst $adminlast $adminemail $adminuser $adminpassword $cachehost $protocol $magentolanguage $magentocurrency $magentotimezone $magentoversion $searchhost
 
-tar czf /root/media.tgz -C /var/www/html/pub/media .
-mount -t nfs4 -o vers=4.1 $efsid.efs.$EC2_REGION.amazonaws.com:/ /var/www/html/pub/media
-rm -rf /var/www/html/pub/media/*
-tar xzf /root/media.tgz -C /var/www/html/pub/media
+tar czf /root/pub.tgz -C /var/www/html/pub .
+mount -t nfs4 -o vers=4.1 $efsid.efs.$EC2_REGION.amazonaws.com:/ /var/www/html/pub
+rm -rf /var/www/html/pub/*
+tar xzf /root/pub.tgz -C /var/www/html/pub
 
 # Remove passwords from files
 sed -i s/${dbpassword}/xxxxx/g /var/log/cloud-init.log

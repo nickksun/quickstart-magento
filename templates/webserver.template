@@ -233,6 +233,8 @@ Resources:
             - ec2.amazonaws.com
           Action:
           - sts:AssumeRole
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM'
       Path: /
       Policies:
       - PolicyDocument:
@@ -249,6 +251,7 @@ Resources:
             - s3:GetObject
             Resource: '*'
         PolicyName: Instance-Limited-Role
+      
   NewIamInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
@@ -349,7 +352,7 @@ Resources:
                   AdminUserName|${AdminUserName}
                   AdminPassword|${AdminPassword}
                   ElastiCacheEndpoint|${ElastiCacheEndpoint}
-                  ElasticsearchEndpoint|${ElasticsearchEndpoint}
+                  ElasticsearchEndpoint|https://${ElasticsearchEndpoint}
                   FileSystem|${FileSystem}
                   MagentoReleaseMedia|${MagentoReleaseMedia}
                   MagentoVersion|${MagentoVersion}
@@ -373,14 +376,22 @@ Resources:
                 files:
                 - /etc/cfn/cfn-hup.conf
                 - /etc/cfn/hooks.d/cfn-auto-reloader.conf
-              awslogs:
-                enabled: 'true'
-                ensureRunning: 'true'
-                files:
-                - /etc/awslogs/awslogs.conf
-                packages:
-                  yum:
-                  - awslogs
+          
+          commands:
+            # 01_create_state_directory:
+            #    command: mkdir -p /var/awslogs/state
+            02_start_awslogsd:
+              command: systemctl start awslogsd
+            03_enable_awslogd:
+              command: systemctl enable awslogsd
+              #  awslogs:
+              #    enabled: 'true'
+              #    ensureRunning: 'true'
+              #    files:
+              #    - /etc/awslogs/awslogs.conf
+              #    packages:
+              #      yum:
+              #      - awslogs
     Properties:
       KeyName: !Ref KeyPair
       IamInstanceProfile: !Ref NewIamInstanceProfile
